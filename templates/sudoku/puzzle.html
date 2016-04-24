@@ -47,9 +47,15 @@
 </head>
 <body>
 <div class="center">
-    <h3><a href={% url 'puzzle_main_menu_url' %}>Menu</a>
+    <h3><a href={% url 'puzzle_main_menu_url' %}>Main menu</a>&nbsp|&nbsp
+        <a href={% url 'empty_puzzle_url' %}>New empty puzzle</a>&nbsp|&nbsp
+        <a href={% url 'new_random_puzzle_url' %}>New random puzzle</a>&nbsp|&nbsp
+        <a href={% url 'mix_puzzle_url' %}>Mix puzzle</a>&nbsp|&nbsp
+        <a href={% url 'relabe_puzzle_url' %}>Relabel puzzle</a>
     </h3>
     <h1>Sudoku puzzle {{ base_puzzle.id }}</h1>
+    <h6>{{ puzzle.finger_print }}</h6>
+
 </div>
 
 
@@ -75,9 +81,8 @@
 <div class="center">
 <a href="{% url 'swich_marks_url' %}">{% if puzzle.all_marks %}Show{% else %}Turn off{% endif %} true candidates</a>
 
-<script>
 
-</script>
+
 </div>
 </body>
 </html>

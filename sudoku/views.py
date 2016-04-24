@@ -82,6 +82,15 @@ def load_base_tables(request):
             table.save()
     return redirect('show_puzzle_url')
 
+def mix_puzzle(request):
+    new.mix()
+    return redirect('show_puzzle_url')
+
+def relabe_puzzle(request):
+    new.relabeling()
+    return redirect('show_puzzle_url')
+
+
 
 
 
