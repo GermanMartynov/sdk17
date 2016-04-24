@@ -1,0 +1,24 @@
+{% if cell.value %}
+    <div class="value">
+        {% if cell.given%}{{ cell.value }}{% else %}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/0/">{{ cell.value }}</a>{% endif %}
+    </div>
+
+{% else %}
+    <table class="marks">
+        <tr>
+            <td>{% if cell.marks.1 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/1/">1</a>{% else %}&nbsp{% endif %}</td>
+            <td>{% if cell.marks.2 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/2/">2</a>{% else %}&nbsp{% endif %}</td>
+            <td>{% if cell.marks.3 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/3/">3</a>{% else %}&nbsp{% endif %}</td>
+        </tr>
+        <tr>
+            <td>{% if cell.marks.4 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/4/">4</a>{% else %}&nbsp{% endif %}</td>
+            <td>{% if cell.marks.5 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/5/">5</a>{% else %}&nbsp{% endif %}</td>
+            <td>{% if cell.marks.6 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/6/">6</a>{% else %}&nbsp{% endif %}</td>
+        </tr>
+        <tr>
+            <td>{% if cell.marks.7 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/7/">7</a>{% else %}&nbsp{% endif %}</td>
+            <td>{% if cell.marks.8 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/8/">8</a>{% else %}&nbsp{% endif %}</td>
+            <td>{% if cell.marks.9 or puzzle.all_marks%}<a href="{% url 'show_puzzle_url' %}{{ cell.index }}/9/">9</a>{% else %}&nbsp{% endif %}</td>
+        </tr>
+    </table>
+{% endif %}
