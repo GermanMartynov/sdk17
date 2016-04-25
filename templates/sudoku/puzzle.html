@@ -76,12 +76,15 @@
             <a href={% url 'relabe_puzzle_url' %}>Relabel puzzle</a>
         </h3>
         <a href="{% url 'swich_marks_url' %}">{% if puzzle.all_marks %}Show{% else %}Turn off{% endif %} true candidates</a>
-        <hr>
+        <hr>Puzzle fingerprint:<br>{% for str in puzzle.fp %} {{ str }}<br> {% endfor %}<hr>
+
+
+
     </div>
 </div>
 
 <div class="puzzle_grid">
-    <h6 align="center">{{ puzzle.finger_print }}</h6>
+    <h6 align="center">{{ puzzle.make_finger_print }}</h6>
     <table class="sudoku_table">
         {% for rows_of_boxes in puzzle.rows_of_boxes %}
             <tr>

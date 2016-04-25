@@ -26,6 +26,7 @@ base_num = "m,,mn,"
 
 def show_puzzle(request):
     """показать пазл"""
+    new.make_finger_print()
     return render(request, 'sudoku/puzzle.html', {'puzzle': new, 'base_puzzle': base_puzzle})
 
 def new_puzzle(request):
@@ -34,7 +35,7 @@ def new_puzzle(request):
     n_pazzles = Unique_tables.objects.count()  # количество пазлов в списке
     rand = randint(1, n_pazzles)     # индекс случайного пазла
     base_puzzle = Unique_tables.objects.get(id=rand)
-    print('случайный пазл #%d :' % base_puzzle.id, base_puzzle.given, '\n длина фингерпринт:', len(base_puzzle.finger_print))
+    # print('случайный пазл #%d :' % base_puzzle.id, base_puzzle.given, '\n длина фингерпринт:', len(base_puzzle.finger_print))
     new.load_table(base_puzzle.given)
     # new.mix()
     return redirect('show_puzzle_url')
@@ -60,7 +61,7 @@ def load_base_tables(request):
         i += 1
         line = line[:-1]    # обрезать последний символ
         puz = MyPuzzle(line)
-        table = Unique_tables(base_string=i, given=line, finger_print=puz.finger_print())
+        table = Unique_tables(base_string=i, given=line, finger_print=puz.make_finger_print())
         try:
             table.save()
         except:

@@ -121,23 +121,26 @@ class Puzzle:
                   self.grid[c*3+r*27+9:c*3+r*27+12],
                   self.grid[c*3+r*27+18:c*3+r*27+21]] for c in range(3)] for r in range(3)]
 
-    def finger_print(self):
-        fp = ['']*9
-        head = ''
+    def make_finger_print(self):
+        """Создание цифрововой метки пазла, не меняющейся от преобразований пазла"""
+        fp = ['']*9 # по строке для каждого возможного значения метки от 1 до 9
+        head = ''   # число свободных ячеек с одной меткой, двумя, тремя ... девятью
         blanks = self.blank_cells
-        for l in range(9):
-            l_marks_cells = [cell for cell in blanks if len(cell.marks) == l+1]
-            head += '{0:02d}'.format(len(l_marks_cells))
-            for i in range(9):
-                n = 0
-                for cell in l_marks_cells:
-                    if cell.marks[i+1]: n += 1
-                fp[i] += '{0:02d}'.format(n)
-        fp.sort(reverse=True)
-        sum = ''
-        for i in range(9): sum += '.' + fp[i]
-        return head + sum
-
+        for n_marks in range(9):  # для каждого количества отметок n_marks от 1 до 9
+            n_marks_cells = [cell for cell in blanks if len(cell.marks) == n_marks+1] # составляем список ячеек имеющих n_marks отметок
+            head += '{0:02d}'.format(len(n_marks_cells))   # добавляем в строку заголовка число ячеек, имеющих n_marks отметок
+            for i in range(9):                  # для i от 0 до 8
+                n = 0                           # подсчитываем сколько ячеек,
+                for cell in n_marks_cells:      # имеющих n_marks отметок
+                    if cell.marks[i+1]: n += 1  # содержит значение i+1
+                fp[i] += '{0:02d}'.format(n)    # записываем число найденых ячеек в соответствующую строку списка fp
+        fp.sort(reverse=True)   # сортируем список
+        self.fp = []
+        self.fp.append(head)
+        for i in range(9):  # формируем fingerprint , добавляя к заголовку сортированный массив fp
+            head += '.' + fp[i]     # в виде строки с разделителем '.'
+            self.fp.append(fp[i])   # и массива
+        return head     # возвращаем fingerprint в виде строки
 
     def set_value(self, i, v):
         """Устанавливаем значение в пустую ячейку или очищаем ранее установленную с очисткой ячеек установленных после нее"""
@@ -378,7 +381,7 @@ if __name__ == '__main__':
 
     new.show()
     print('blank_cells:', [cell.marks.candidats for cell in new.blank_cells])
-    fp0 = new.finger_print()
+    fp0 = new.make_finger_print()
     # print('find_singles:', [new.grid[i]['mark'] for i in new.find_single_ang_set()])
 
     print(new.grid[0].marks[2])
@@ -401,7 +404,7 @@ if __name__ == '__main__':
     rule = new.mix(relabeling=True)
     new.show()
     print('blank_cells:', [cell.marks.candidats for cell in new.blank_cells])
-    fp1 = new.finger_print()
+    fp1 = new.make_finger_print()
 
     sol = set()
     t = time.time()
