@@ -89,6 +89,7 @@ def mix_puzzle(request):
 
 def relabe_puzzle(request):
     new.relabeling()
+    new.update_all_marks()
     return redirect('show_puzzle_url')
 
 
