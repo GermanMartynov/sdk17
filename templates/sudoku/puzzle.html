@@ -77,6 +77,15 @@
         </h3>
         <a href="{% url 'swich_marks_url' %}">{% if puzzle.all_marks %}Show{% else %}Turn off{% endif %} true candidates</a>
         <hr>Puzzle fingerprint:<br>{% for str in puzzle.fp %} {{ str }}<br> {% endfor %}<hr>
+        Puzzle is{% if puzzle.is_correct %}{% else %} not{% endif %} correct<br>
+        <hr>
+        {% if puzzle.solved %}Puzzle has solutions:{{ puzzle.solved.n_solutions }}<br>
+{#            {% if puzzle.solved.n_solutions %}#}
+                {% for row in puzzle.solved.solution%}{{ row }}<br>{% endfor %}
+{#            {% endif %}#}
+        {% else %}
+            <a href={% url 'solve_puzzle_url' %}>Try to solve the puzzle</a>
+        {% endif %}
 
 
 

@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^puzzle/empty/$', views.new_empty_puzzle, name='empty_puzzle_url'),
     url(r'^puzzle/mix/$', views.mix_puzzle, name='mix_puzzle_url'),
     url(r'^puzzle/relabel/$', views.relabe_puzzle, name='relabe_puzzle_url'),
+    url(r'^puzzle/solve/$', views.solve_puzzle, name='solve_puzzle_url'),
 ]

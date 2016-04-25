@@ -53,6 +53,7 @@ class Puzzle:
         """Инициация пустого пазла либо на основе 81 символьной строки со значениями"""
         self.grid = []
         self.steps = []
+        self.solved = {}
         for i in range(81): # загружаем ячейки пустыми или из базовой строки
             self.grid.append(Cell(i, int(base_str[i]), give=True)) if base_str else self.grid.append(Cell(i))
         if base_str: self.update_all_marks()
@@ -115,6 +116,32 @@ class Puzzle:
         b.sort(key=(lambda cell: len(cell.marks)), reverse=True)  # и их количеству
         return b
 
+    @property
+    def is_correct(self):
+        """Возвращает истину если заполненные ячейки соответствуют правилам судоку"""
+        for i in range(9):
+            if not (self.no_repit(self.boxes[i]) and self.no_repit(self.rows[i]) and self.no_repit(self.columns[i])):
+                return False
+        return True
+
+
+    def get_solution(self):
+        if not self.solved:
+            puz = copy.deepcopy(self)
+            sol = set()
+            puz.solve(sol, max_solution=2)
+            n = len(sol)
+            self.solved['n_solutions'] = n
+            if len(sol):
+                self.solved['solution'] = [[cell.value for cell in rw] for rw in sol.pop().rows]
+        return self.solved
+
+    def no_repit(self, cells_list):
+        """:return: True если ячейки не имеют одинаковых отличных от нуля значений"""
+        len_of_set = len(set([cell.value for cell in cells_list if cell.value]))
+        len_of_sequence = len([cell.value for cell in cells_list if cell.value])
+        return True if len_of_set == len_of_sequence else False
+
     def rows_of_boxes(self):
         """ возвращает список из 3 трех слоев по 3 блока 3Х3 пазла """
         return [[[self.grid[c*3+r*27:c*3+r*27+3],
@@ -149,6 +176,9 @@ class Puzzle:
                 self.grid[i].set(v)                 # ставим заначение
                 self.update_marks_by_value(i, v)    # пересчитываем метки
                 self.steps.append(self.grid[i])     # записываем установленную ячейку
+                if self.solved:
+                    if self.solved['solution'][i//9][i%9] != v: # если значение не совпадает с решением
+                        self.solved = {}                # обнуляем решение
             else:   # если в заполненную:
                 return      # ничего не делаем и возвращаемся
         else: # если надо выставить нулевое значение
@@ -158,6 +188,7 @@ class Puzzle:
                     step.value = 0              # очищаем ее
                     if i == step.index:         # если это был индекс нужной нам ячейки
                         self.update_all_marks()     # пересчитываем все отметки
+                        self.solved = {}                    # обнуляем решение
                         return                      # и возвращаемся
 
     def update_marks_by_value(self, i, v):
@@ -218,8 +249,6 @@ class Puzzle:
                     return self.blank_cells
             b = self.blank_cells  # обновляем список индексов
         return b   # возвращаем список индексов
-
-
 
     def solve(self, sol, max_solution=0, find_singles=True):
         """  Найти  множество решений пазла
@@ -288,6 +317,7 @@ class Puzzle:
         random.shuffle(rule)   # перемешать правило замены
         for cell in self.grid:      # все установленные значения заменить согласно правилу
             if cell.value: cell.value = rule[cell.value - 1]
+        self.solved = {}
         return rule
 
     def mix(self, amt=100, relabeling=False):
@@ -298,6 +328,7 @@ class Puzzle:
         if relabeling:  rule = self.relabeling()
         self.reset_indexes()    #переопределить индекы
         self.update_all_marks() # пересчитать метки
+        self.solved = {}
         return rule if relabeling else [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
     def set_random_value(self, i, seed_number=0):
@@ -375,11 +406,12 @@ if __name__ == '__main__':
     import time
     print('-' * 8, ' Test ', '-' * 8)
 
-    base = '000000000000001002034000050000000030000000060700008000000050000006340000100600907'
+    base = '000000001000002000003004050000060000000700620018000000000085003060000008200000000'
     print(base)
     new = Puzzle(base)
 
     new.show()
+    print(new.is_correct)
     print('blank_cells:', [cell.marks.candidats for cell in new.blank_cells])
     fp0 = new.make_finger_print()
     # print('find_singles:', [new.grid[i]['mark'] for i in new.find_single_ang_set()])
@@ -388,10 +420,9 @@ if __name__ == '__main__':
 
     sol = set()
     t = time.time()
-    new.solve(sol, max_solution=2, find_singles=True)
+    solved = new.get_solution()
     print('C поиском скрытых синглов. Решений:%d   Затрачено времени:%f секунд' % (len(sol), time.time() - t))
-    solved = sol.pop()
-    solved.show()
+
 
     s = ''
     for cell in solved.grid:

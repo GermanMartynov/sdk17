@@ -5,6 +5,7 @@ from random import randint
 from sudoku.sudoku import Puzzle
 from sudoku.models import Unique_tables
 import time
+import copy
 
 
 
@@ -90,6 +91,10 @@ def mix_puzzle(request):
 def relabe_puzzle(request):
     new.relabeling()
     new.update_all_marks()
+    return redirect('show_puzzle_url')
+
+def solve_puzzle(request):
+    new.get_solution()
     return redirect('show_puzzle_url')
 
 
