@@ -10,6 +10,24 @@
         a { color: grey;
         }
 
+        .puzzle_menu {
+{#            background-color: #fc0; /* Цвет фона слоя */#}
+            padding: 0px; /* Поля вокруг текста */
+            float: left; /* Обтекание по правому краю */
+            width: 15%; /* Ширина слоя */
+        }
+
+        .puzzle_grid {
+{#            background-color: #c0c0c0; /* Цвет фона слоя */#}
+            padding: 5px; /* Поля вокруг текста */
+            width: 70%; /* Ширина слоя */#}
+            float: inherit; /* Обтекание по правому краю */
+        }
+
+        .clear {
+            clear: left; /* Отмена обтекания */
+        }
+
         .center{
             margin: 0 auto;
             text-align: center;
@@ -46,43 +64,43 @@
   </style>
 </head>
 <body>
-<div class="center">
-    <h3><a href={% url 'puzzle_main_menu_url' %}>Main menu</a>&nbsp|&nbsp
-        <a href={% url 'empty_puzzle_url' %}>New empty puzzle</a>&nbsp|&nbsp
-        <a href={% url 'new_random_puzzle_url' %}>New random puzzle</a>&nbsp|&nbsp
-        <a href={% url 'mix_puzzle_url' %}>Mix puzzle</a>&nbsp|&nbsp
-        <a href={% url 'relabe_puzzle_url' %}>Relabel puzzle</a>
-    </h3>
-    <h1>Sudoku puzzle {{ base_puzzle.id }}</h1>
-    <h6>{{ puzzle.finger_print }}</h6>
 
+<div class="puzzle_menu">
+    <div class="center">
+        <h2>Puzzle {{ base_puzzle.id }}</h2>
+        <hr>
+        <h3>
+            <a href={% url 'empty_puzzle_url' %}>New empty puzzle</a><br>
+            <a href={% url 'new_random_puzzle_url' %}>New random puzzle</a><br>
+            <a href={% url 'mix_puzzle_url' %}>Mix puzzle</a><br>
+            <a href={% url 'relabe_puzzle_url' %}>Relabel puzzle</a>
+        </h3>
+        <a href="{% url 'swich_marks_url' %}">{% if puzzle.all_marks %}Show{% else %}Turn off{% endif %} true candidates</a>
+        <hr>
+    </div>
 </div>
 
-
-<table class="sudoku_table">
-    {% for rows_of_boxes in puzzle.rows_of_boxes %}
-        <tr>
-              {% for box in rows_of_boxes %}
-                    <td>
-                    <table class="sudoku_table">
-                        {% for row in box %}
-                            <tr>
-                                {% for cell in row %}
-                                    <td class="cell">{% include 'sudoku/cell.html' %}</td>
-                                {% endfor %}
-                            </tr>
-                        {% endfor %}
-                     </table>
-                    </td>
-              {% endfor %}
-        </tr>
-    {% endfor %}
-</table>
-<div class="center">
-<a href="{% url 'swich_marks_url' %}">{% if puzzle.all_marks %}Show{% else %}Turn off{% endif %} true candidates</a>
-
-
-
+<div class="puzzle_grid">
+    <h6 align="center">{{ puzzle.finger_print }}</h6>
+    <table class="sudoku_table">
+        {% for rows_of_boxes in puzzle.rows_of_boxes %}
+            <tr>
+                  {% for box in rows_of_boxes %}
+                        <td>
+                        <table class="sudoku_table">
+                            {% for row in box %}
+                                <tr>
+                                    {% for cell in row %}
+                                        <td class="cell">{% include 'sudoku/cell.html' %}</td>
+                                    {% endfor %}
+                                </tr>
+                            {% endfor %}
+                         </table>
+                        </td>
+                  {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
 </div>
 </body>
 </html>
