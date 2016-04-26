@@ -72,9 +72,14 @@
         <h3>
             <a href={% url 'empty_puzzle_url' %}>New empty puzzle</a><br>
             <a href={% url 'new_random_puzzle_url' %}>New random puzzle</a><br>
-            <a href={% url 'mix_puzzle_url' %}>Mix puzzle</a><br>
+            <a href={% url 'mix_puzzle_url' %}>Mix puzzle</a>
+            {% if puzzle.transformations %}<a href={% url 'undo_mix_puzzle_url' %}>&nbsp|&nbsp Undo mix</a><br>
+            {% else %}<br>
+            {% endif %}
             <a href={% url 'relabe_puzzle_url' %}>Relabel puzzle</a>
-            {% if puzzle.relabelings %}<a href={% url 'undo_relabeling_puzzle_url' %}>&nbsp|&nbsp Undo relabel</a>{% endif %}
+            {% if puzzle.relabelings %}<a href={% url 'undo_relabeling_puzzle_url' %}>&nbsp|&nbsp Undo relabel</a><br>
+            {% else %}<br>
+            {% endif %}
         </h3>
         <a href="{% url 'swich_marks_url' %}">{% if puzzle.all_marks %}Show{% else %}Turn off{% endif %} true candidates</a>
         <hr>Puzzle fingerprint:<br>{% for str in puzzle.fp %} {{ str }}<br> {% endfor %}<hr>

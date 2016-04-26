@@ -101,6 +101,9 @@ def undo_relabeling_puzzle(request):
     new.undo_relabeling()
     return redirect('show_puzzle_url')
 
+def undo_mix_puzzle(request):
+    new.undo_mix()
+    return redirect('show_puzzle_url')
 
 
 

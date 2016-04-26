@@ -200,12 +200,6 @@ class Puzzle:
         for cell in self.grid:
             if cell.value:  self.update_marks_by_value(cell.index, cell.value)  # обновление меток всех связанных ячеек
 
-    def reset_indexes(self):
-        """переопределить индексы ячеек"""
-        self.transformations.append([cell.index for cell in self.grid]) # запомнить трансформмацию индексов
-        for i in range(81):
-            self.grid[i].index = i
-
     def make_given(self):
         """Отметить все заполненные ячейки как предопределенные"""
         for cell in self.grid:
@@ -339,8 +333,17 @@ class Puzzle:
         self.solved = {}
         return rule if relabeling else [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+    def reset_indexes(self):
+        """переопределить индексы ячеек"""
+        self.transformations.append([cell.index for cell in self.grid]) # запомнить трансформмацию индексов
+        for i in range(81):
+            self.grid[i].index = i
+
     def undo_mix(self):
-        pass
+        if self.transformations:
+            transform = self.transformations.pop()
+            for i in range(81):  self.grid[i].index = transform[i]
+            self.grid.sort(key=(lambda cell: cell.index), reverse=False)
 
     def undo_relabeling(self):
         if self.relabelings:
