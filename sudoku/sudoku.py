@@ -51,9 +51,15 @@ class Cell:
 class Puzzle:
     def __init__(self, base_str=''):
         """Инициация пустого пазла либо на основе 81 символьной строки со значениями"""
-        self.grid = []
-        self.steps = []
-        self.solved = {}
+        self.grid = []              # список ячеек пазла
+        self.steps = []             # история установки значений
+        self.transformations = []   # история трансформаций
+        self.relabelings = []       # история замены значений
+        self.solved = {}    # словарь с решением текущего состояния пазла
+                            # если словарь пустой - решения не известны, иначе:
+                                # по ключу 'n_solutions' лежит количество решений
+                                # # по ключу 'solution' массив с значениями решения по строкам
+
         for i in range(81): # загружаем ячейки пустыми или из базовой строки
             self.grid.append(Cell(i, int(base_str[i]), give=True)) if base_str else self.grid.append(Cell(i))
         if base_str: self.update_all_marks()
@@ -123,18 +129,6 @@ class Puzzle:
             if not (self.no_repit(self.boxes[i]) and self.no_repit(self.rows[i]) and self.no_repit(self.columns[i])):
                 return False
         return True
-
-
-    def get_solution(self):
-        if not self.solved:
-            puz = copy.deepcopy(self)
-            sol = set()
-            puz.solve(sol, max_solution=2)
-            n = len(sol)
-            self.solved['n_solutions'] = n
-            if len(sol):
-                self.solved['solution'] = [[cell.value for cell in rw] for rw in sol.pop().rows]
-        return self.solved
 
     def no_repit(self, cells_list):
         """:return: True если ячейки не имеют одинаковых отличных от нуля значений"""
@@ -207,11 +201,13 @@ class Puzzle:
             if cell.value:  self.update_marks_by_value(cell.index, cell.value)  # обновление меток всех связанных ячеек
 
     def reset_indexes(self):
-        for i in range(81): self.grid[i].index = i
-
+        """переопределить индексы ячеек"""
+        self.transformation.append([cell.index for cell in self.grid]) # запомнить трансформмацию индексов
+        for i in range(81):
+            self.grid[i].index = i
 
     def make_given(self):
-        """Отметить заполненные ячейки как неизменяемые """
+        """Отметить все заполненные ячейки как предопределенные"""
         for cell in self.grid:
             if cell.value:
                 cell.given = True
@@ -272,6 +268,17 @@ class Puzzle:
                     puz.set_value(b[0].index, v)  # устанавливаем значение в ячейку
                     puz.solve(sol, max_solution, find_singles)  # пробуем решить
 
+    def get_solution(self):
+        if not self.solved:
+            puz = copy.deepcopy(self)
+            sol = set()
+            puz.solve(sol, max_solution=2)
+            n = len(sol)
+            self.solved['n_solutions'] = n
+            if len(sol):
+                self.solved['solution'] = [[cell.value for cell in rw] for rw in sol.pop().rows]
+        return self.solved
+
     def transposing(self):
         """транспонировать пазл"""
         self.grid = sum_of(self.columns)
@@ -315,9 +322,10 @@ class Puzzle:
         rule = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         if seed_number: random.seed(seed_number)
         random.shuffle(rule)   # перемешать правило замены
+        self.relabelings.append(rule)   # запомнить правило преобразования
         for cell in self.grid:      # все установленные значения заменить согласно правилу
             if cell.value: cell.value = rule[cell.value - 1]
-        self.solved = {}
+        self.solved = {}    # обнулить решение
         return rule
 
     def mix(self, amt=100, relabeling=False):
