@@ -37,7 +37,7 @@ def new_puzzle(request):
     rand = randint(1, n_pazzles)     # индекс случайного пазла
     base_puzzle = Unique_tables.objects.get(id=rand)
     # print('случайный пазл #%d :' % base_puzzle.id, base_puzzle.given, '\n длина фингерпринт:', len(base_puzzle.finger_print))
-    new.load_table(base_puzzle.given)
+    new.__init__(base_str=base_puzzle.given, base_has_solution=base_puzzle.has_solution, base_solution=base_puzzle.solved, single_solution=base_puzzle.single_solution)
     # new.mix()
     return redirect('show_puzzle_url')
 
