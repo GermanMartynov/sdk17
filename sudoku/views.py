@@ -97,6 +97,9 @@ def solve_puzzle(request):
     new.get_solution()
     return redirect('show_puzzle_url')
 
+def undo_relabeling_puzzle(request):
+    new.undo_relabeling()
+    return redirect('show_puzzle_url')
 
 
 

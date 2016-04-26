@@ -339,6 +339,15 @@ class Puzzle:
         self.solved = {}
         return rule if relabeling else [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+    def undo_mix(self):
+        pass
+
+    def undo_relabeling(self):
+        if self.relabelings:
+            rule = self.relabelings.pop()
+            for cell in self.grid:
+                if cell.value: cell.value = rule.index(cell.value) + 1
+
     def set_random_value(self, i, seed_number=0):
         """установить для ячейки i случайное возможное значение """
         val = self.grid[i].marks.candidats  # получаем очищенный список отметок
