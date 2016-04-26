@@ -202,7 +202,7 @@ class Puzzle:
 
     def reset_indexes(self):
         """переопределить индексы ячеек"""
-        self.transformation.append([cell.index for cell in self.grid]) # запомнить трансформмацию индексов
+        self.transformations.append([cell.index for cell in self.grid]) # запомнить трансформмацию индексов
         for i in range(81):
             self.grid[i].index = i
 
