@@ -343,11 +343,15 @@ class Puzzle:
         self.base_solution = [self.base_solution[i] for i in self.transformations[-1]] # трансформировать решение базового пазла
 
     def undo_mix(self):
+        """восстановить перемешанный пазл и базовое решение"""
         if self.transformations:
             transform = self.transformations.pop()
+            tmp = [0]*81
             for i in range(81):
+                tmp[transform[i]] = self.base_solution[i]
                 self.grid[i].index = transform[i]
-            self.grid.sort(key=(lambda cell: cell.index), reverse=False)
+            self.grid.sort(key=(lambda cell: cell.index), reverse=False)  # трансформировать  пазл
+            self.base_solution = tmp    # трансформировать решение базового пазла
             self.solved = {}
 
     def undo_relabeling(self):
