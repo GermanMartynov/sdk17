@@ -340,7 +340,7 @@ class Puzzle:
         self.transformations.append([cell.index for cell in self.grid]) # запомнить трансформмацию индексов
         for i in range(81):     # переопределить индексы ячеек
             self.grid[i].index = i
-        self.base_solution = [self.base_solution[i] for i in self.transformations[-1]] # перемешать решение базового пазла
+        self.base_solution = [self.base_solution[i] for i in self.transformations[-1]] # трансформировать решение базового пазла
 
     def undo_mix(self):
         if self.transformations:

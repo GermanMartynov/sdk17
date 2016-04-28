@@ -99,8 +99,8 @@
 </div>
 
 <div class="puzzle_grid">
-    <h6 align="center">{{ puzzle.given_cells }}</h6>
-    <h6 align="center">{{ puzzle.base_solution }}</h6>
+    <h6 align="center">given_cells:<br>{{ puzzle.given_cells }}</h6>
+    <h6 align="center">base_solution:<br>{{ puzzle.base_solution }}</h6>
     <table class="sudoku_table">
         {% for rows_of_boxes in puzzle.rows_of_boxes %}
             <tr>

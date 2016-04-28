@@ -43,7 +43,7 @@ def new_puzzle(request):
 
 def new_empty_puzzle(request):
     global base_puzzle
-    new.load_table([0]*81)
+    new.__init__([0]*81)
     base_puzzle = ''
     return redirect('show_puzzle_url')
 
