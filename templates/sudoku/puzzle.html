@@ -68,6 +68,8 @@
 <div class="puzzle_menu">
     <div class="center">
         <h2>Puzzle {{ base_puzzle.id }}</h2>
+        <h4>Given: {{ puzzle.given }}</h4>
+        <h4>Level: {{ base_puzzle.time_of_solving }}</h4>
         <hr>
         <h3>
             <a href={% url 'empty_puzzle_url' %}>New empty puzzle</a><br>
@@ -85,7 +87,7 @@
         <hr>Puzzle fingerprint:<br>{% for str in puzzle.fp %} {{ str }}<br> {% endfor %}<hr>
         Puzzle is{% if puzzle.is_correct %}{% else %} not{% endif %} correct<br>
         <hr>
-        {% if puzzle.solved %}Puzzle has solutions:{{ puzzle.solved.n_solutions }}<br>
+        {% if puzzle.solved %}Was found solutions:{{ puzzle.solved.n_solutions }}<br>
 {#            {% if puzzle.solved.n_solutions %}#}
                 {% for row in puzzle.solved.solution%}{{ row }}<br>{% endfor %}
 {#            {% endif %}#}

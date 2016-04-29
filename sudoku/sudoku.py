@@ -39,8 +39,9 @@ class Marks:
 
 class Cell:
     def __init__(self, i, v=0, give=False):
-        self.index = i
-        self.marks = Marks()
+        self.index = i          # индекс ячейки в массиве
+        self.marks = Marks()    # отметки о возможных значениях
+        self.base_value = 0     # значение ячейки, соответствующее решению базового пазла
         self.set(v, give)
 
     def set(self, v, give=False):
@@ -52,7 +53,7 @@ class Puzzle:
     def __init__(self, base_str='', base_has_solution=False, base_solution='', single_solution=False):
         """Инициация пустого пазла либо на основе 81 символьной строки со значениями"""
         self.grid = []              # список ячеек пазла
-        self.base_solution = [int(v) for v in list(base_solution)]     # решение базового пазла
+        # self.base_solution = [int(v) for v in list(base_solution)]     # решение базового пазла
         self.single_solution = single_solution  # единственное ли решение базового пазла
         self.steps = []             # история установки значений
         self.transformations = []   # история трансформаций
@@ -64,6 +65,7 @@ class Puzzle:
 
         for i in range(81): # загружаем ячейки пустыми или из базовой строки
             self.grid.append(Cell(i, int(base_str[i]), give=True)) if base_str else self.grid.append(Cell(i))
+            if base_solution: self.grid[i].base_value = int(base_solution[i])
         if base_str: self.update_all_marks()
 
     def puzzle_str(self):
@@ -83,6 +85,10 @@ class Puzzle:
         for i in range(9):
             show_str = show_str + ps[i*9:i*9 + 9] + '\n'
         return show_str
+
+    @property
+    def base_solution(self):
+        return [cell.base_value for cell in self.grid]
 
     @property
     def given_cells(self):
@@ -119,10 +125,14 @@ class Puzzle:
     def filled_cells(self):
         """  Вернуть список заполненных ячеек, отсортированных по количеству меток
          :param rev: обратная сортировка (True) или прямая (False)"""
-        b = [cell for cell in self.grid if cell.value != 0]  # получить список пустых ячеек
+        b = [cell for cell in self.grid if cell.value != 0]  # получить список непустых ячеек
         b.sort(key=(lambda cell: cell.marks.candidats), reverse=False)    # отсортировать по меткам
         b.sort(key=(lambda cell: len(cell.marks)), reverse=True)  # и их количеству
         return b
+
+    @property
+    def given(self):
+        return len([cell for cell in self.grid if cell.given])
 
     @property
     def is_correct(self):
@@ -313,52 +323,50 @@ class Puzzle:
         self.swap_row_area()
         self.transposing()
 
+    def reset_indexes(self):
+        """переопределить индексы ячеек перемешанного пазла"""
+        self.transformations.append([cell.index for cell in self.grid]) # запомнить трансформмацию индексов
+        for i in range(81):     # переопределить индексы ячеек
+            self.grid[i].index = i
+        self.update_all_marks() # пересчитать метки
+
+    def mix(self, amt=100):
+        """Перемешать таблицу amt раз случайным преобразованием amt раз"""
+        funct = self.transposing, self.swap_rows, self.rotate90,  self.swap_columns, self.swap_row_area, self.swap_columns_area
+        for t in range(amt):
+            funct[random.randint(0, len(funct) - 1)]()  # вызов случайной функции
+        self.reset_indexes()    # переопределить индекы и пересчитать метки
+        self.solved = {}        # очистить словарь текущего решения
+
+    def undo_mix(self):
+        """восстановить перемешанный пазл и базовое решение"""
+        if self.transformations:
+            transform = self.transformations.pop()  # извлеч трансформацию
+            for i in range(81):
+                self.grid[i].index = transform[i]   # вернуть индексы ячеек на место
+            self.grid.sort(key=(lambda cell: cell.index), reverse=False)  # отсортировать ячейки по индексам
+            self.solved = {}    # очистить словарь текущего решения
+
     def relabeling(self, seed_number=0):
         """замена каждого значения по правилу"""
         rule = [1, 2, 3, 4, 5, 6, 7, 8, 9]
         if seed_number: random.seed(seed_number)
         random.shuffle(rule)   # перемешать правило замены
         self.relabelings.append(rule)   # запомнить правило преобразования
-        for cell in self.grid:      # все установленные значения заменить согласно правилу
-            if cell.value: cell.value = rule[cell.value - 1]
-        self.solved = {}    # обнулить решение
+        for cell in self.grid:      # заменить согласно правилу
+            if cell.value: cell.value = rule[cell.value - 1]    # значения заполненных ячеек
+            if cell.base_value: cell.base_value = rule[cell.base_value - 1]    # значения базового решения
+        self.update_all_marks()     # пересчитать метки
+        self.solved = {}            # очистить словарь текущего решения
         return rule
-
-    def mix(self, amt=100, relabeling=False):
-        """Перемешать таблицу amt раз случайным преобразованием amt раз"""
-        funct = self.transposing, self.swap_rows, self.rotate90,  self.swap_columns, self.swap_row_area, self.swap_columns_area
-        for t in range(amt):
-            funct[random.randint(0, len(funct) - 1)]()  # вызов случайной функции
-        if relabeling:  rule = self.relabeling()
-        self.reset_indexes()    #переопределить индекы
-        self.update_all_marks() # пересчитать метки
-        self.solved = {}
-        return rule if relabeling else [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-    def reset_indexes(self):
-        """переопределить индексы ячеек перемешанного пазла"""
-        self.transformations.append([cell.index for cell in self.grid]) # запомнить трансформмацию индексов
-        for i in range(81):     # переопределить индексы ячеек
-            self.grid[i].index = i
-        self.base_solution = [self.base_solution[i] for i in self.transformations[-1]] # трансформировать решение базового пазла
-
-    def undo_mix(self):
-        """восстановить перемешанный пазл и базовое решение"""
-        if self.transformations:
-            transform = self.transformations.pop()
-            tmp = [0]*81
-            for i in range(81):
-                tmp[transform[i]] = self.base_solution[i]
-                self.grid[i].index = transform[i]
-            self.grid.sort(key=(lambda cell: cell.index), reverse=False)  # трансформировать  пазл
-            self.base_solution = tmp    # трансформировать решение базового пазла
-            self.solved = {}
 
     def undo_relabeling(self):
         if self.relabelings:
             rule = self.relabelings.pop()
             for cell in self.grid:
                 if cell.value: cell.value = rule.index(cell.value) + 1
+                if cell.base_value: cell.base_value = rule.index(cell.base_value) + 1
+            self.update_all_marks()     # пересчитать метки
             self.solved = {}
 
     def set_random_value(self, i, seed_number=0):
@@ -462,7 +470,7 @@ if __name__ == '__main__':
 
     # new.load_table(base)
     new.load_table(base)
-    rule = new.mix(relabeling=True)
+    rule = new.mix()
     new.show()
     print('blank_cells:', [cell.marks.candidats for cell in new.blank_cells])
     fp1 = new.make_finger_print()
