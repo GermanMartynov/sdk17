@@ -28,7 +28,7 @@ base_num = "m,,mn,"
 def show_puzzle(request):
     """показать пазл"""
     new.make_finger_print()
-    return render(request, 'sudoku/puzzle.html', {'puzzle': new, 'base_puzzle': base_puzzle})
+    return render(request, 'sudoku/puzzle.html', {'puzzle': new, 'base_puzzle': base_puzzle, 'number_of_filled': len(new.filled_cells)})
 
 def new_puzzle(request):
     """загрузить случайный пазл"""

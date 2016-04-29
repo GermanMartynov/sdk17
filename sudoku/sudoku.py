@@ -182,8 +182,7 @@ class Puzzle:
                 self.grid[i].set(v)                 # ставим заначение
                 self.update_marks_by_value(i, v)    # пересчитываем метки
                 self.steps.append(self.grid[i])     # записываем установленную ячейку
-                if self.solved:
-                    if self.solved['solution'][i//9][i%9] != v: # если значение не совпадает с решением
+                if self.grid[i].value != self.grid[i].base_value: # если значение не совпадает с решением
                         self.solved = {}                # обнуляем решение
             else:   # если в заполненную:
                 return      # ничего не делаем и возвращаемся
