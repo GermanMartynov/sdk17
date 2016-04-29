@@ -87,6 +87,7 @@
         <hr>Puzzle fingerprint:<br>{% for str in puzzle.fp %} {{ str }}<br> {% endfor %}<hr>
         Puzzle is{% if puzzle.is_correct %}{% else %} not{% endif %} correct<br>
         <hr>
+        {% if puzzle.has_base_solutin %}Puzzle has base solution<br>{% endif %}
         {% if puzzle.solved %}Was found solutions:{{ puzzle.solved.n_solutions }}<br>
 {#            {% if puzzle.solved.n_solutions %}#}
                 {% for row in puzzle.solved.solution%}{{ row }}<br>{% endfor %}

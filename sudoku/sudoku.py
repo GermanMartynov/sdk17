@@ -135,6 +135,14 @@ class Puzzle:
         return len([cell for cell in self.grid if cell.given])
 
     @property
+    def has_base_solutin(self):
+        if self.base_solution:
+            for cell in self.grid:
+                if cell.value and (cell.value != cell.base_value): return False
+            return True
+        return False
+
+    @property
     def is_correct(self):
         """Возвращает истину если заполненные ячейки соответствуют правилам судоку"""
         for i in range(9):
