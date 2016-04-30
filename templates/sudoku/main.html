@@ -19,8 +19,11 @@
 <body>
 <div class="main_menu">
     <h1>Sudoku menu</h1>
-    <h3><a href="{% url 'show_puzzle_url' %}">Resume puzzle</a></h3>
-    <h3><a href="{% url 'load_tables_from_file_url' %}">Load base tables</a></h3>
+    <h3><a href="{% url 'show_puzzle_url' %}">Resume puzzle</a><br>
+        <a href={% url 'empty_puzzle_url' %}>New empty puzzle</a><br>
+        <a href={% url 'new_random_puzzle_url' %}>New random puzzle</a><br>
+{#        <a href="{% url 'load_tables_from_file_url' %}">Load base tables</a>#}
+    </h3>
 </div>
 
 </body>
