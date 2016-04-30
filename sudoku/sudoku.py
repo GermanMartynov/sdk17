@@ -138,6 +138,7 @@ class Puzzle:
     def has_base_solutin(self):
         if self.base_solution:
             for cell in self.grid:
+                if not cell.base_value: return False
                 if cell.value and (cell.value != cell.base_value): return False
             return True
         return False
@@ -282,6 +283,9 @@ class Puzzle:
                     puz.solve(sol, max_solution, find_singles)  # пробуем решить
 
     def get_solution(self):
+        if self.has_base_solutin:
+            self.solved['n_solutions'] = 1 if self.single_solution else 2
+            self.solved['solution'] = [[cell.base_value for cell in row] for row in self.rows]
         if not self.solved:
             puz = copy.deepcopy(self)
             sol = set()
@@ -343,7 +347,7 @@ class Puzzle:
         for t in range(amt):
             funct[random.randint(0, len(funct) - 1)]()  # вызов случайной функции
         self.reset_indexes()    # переопределить индекы и пересчитать метки
-        self.solved = {}        # очистить словарь текущего решения
+        self.get_solution()
 
     def undo_mix(self):
         """восстановить перемешанный пазл и базовое решение"""
@@ -352,7 +356,7 @@ class Puzzle:
             for i in range(81):
                 self.grid[i].index = transform[i]   # вернуть индексы ячеек на место
             self.grid.sort(key=(lambda cell: cell.index), reverse=False)  # отсортировать ячейки по индексам
-            self.solved = {}    # очистить словарь текущего решения
+            self.get_solution()
 
     def relabeling(self, seed_number=0):
         """замена каждого значения по правилу"""
@@ -364,7 +368,7 @@ class Puzzle:
             if cell.value: cell.value = rule[cell.value - 1]    # значения заполненных ячеек
             if cell.base_value: cell.base_value = rule[cell.base_value - 1]    # значения базового решения
         self.update_all_marks()     # пересчитать метки
-        self.solved = {}            # очистить словарь текущего решения
+        self.get_solution()
         return rule
 
     def undo_relabeling(self):
@@ -374,7 +378,7 @@ class Puzzle:
                 if cell.value: cell.value = rule.index(cell.value) + 1
                 if cell.base_value: cell.base_value = rule.index(cell.base_value) + 1
             self.update_all_marks()     # пересчитать метки
-            self.solved = {}
+            self.get_solution()
 
     def set_random_value(self, i, seed_number=0):
         """установить для ячейки i случайное возможное значение """
